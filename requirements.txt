@@ -1,0 +1,41 @@
+# =============================================================================
+# OpenAMRobot 2.0 | Workstream C | Embodied AI & Imitation Learning
+# requirements.txt — pinned environment (Python 3.10)
+#
+# Pinning policy (binding, per C-TEAM-PLAN-01 rev2.0):
+#   HC-1   Adapter, not fork: we consume upstream LeRobot as a pinned release.
+#          No private fork of the training stack.
+#   HC-11  The release manifest pins the validated LeRobot release/commit and
+#          the OpenAMRobot schema/adapter revision.
+#   C9     "Pinned versions: lerobot commit hash in requirements.txt + release
+#          manifest" — the exact PyPI release below is the installable pin;
+#          the corresponding upstream commit is recorded in RELEASE_MANIFEST.md.
+#
+# Install:
+#   python3.10 -m venv .venv && source .venv/bin/activate
+#   python -m pip install --upgrade pip
+#   pip install -r requirements.txt
+#
+# GPU note (C11 ACT training): PyPI torch wheels ship with a CUDA runtime.
+# For a specific CUDA build (e.g. cu124), install torch/torchvision first from
+# https://download.pytorch.org/whl/cu124 at the exact versions below, then
+# install the remainder of this file.
+# =============================================================================
+
+# --- Training stack (HC-1 / HC-11: pinned upstream, never forked) -----------
+lerobot==0.4.1            # LeRobotDataset v3.0 format ("codebase_version": "v3.0")
+torch==2.5.1
+torchvision==0.20.1       # matched to torch 2.5.1
+
+# --- Dataset I/O & QA tooling (C2/C9 contract, C10 pre-flight gate) ---------
+numpy==1.26.4
+pyarrow==17.0.0           # parquet read/write for scripts/check_dataset_integrity.py
+pandas==2.2.3             # episode data mode for scripts/validate_dataset_contract.py
+opencv-python==4.10.0.84  # frame decode for frozen-camera (entropy) checks
+
+# --- Evaluation statistics (C14: Wilson score intervals) --------------------
+statsmodels==0.14.4       # proportion_confint(method="wilson")
+scipy==1.13.1
+
+# --- Test harness (C10 fault-injection fixtures) ----------------------------
+pytest==8.3.3

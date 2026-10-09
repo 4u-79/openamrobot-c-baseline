@@ -1,0 +1,92 @@
+{
+  "codebase_version": "v3.0",
+  "robot_type": "openamrobot_2",
+  "fps": 30,
+  "features": {
+    "observation.state": {
+      "dtype": "float32",
+      "shape": [21],
+      "names": [
+        "base_linear_x",
+        "base_linear_y",
+        "base_angular_z",
+        "torso_pitch",
+        "torso_yaw",
+        "left_shoulder_pan",
+        "left_shoulder_lift",
+        "left_elbow_flex",
+        "left_wrist_flex",
+        "left_wrist_roll",
+        "left_wrist_yaw",
+        "left_gripper",
+        "right_shoulder_pan",
+        "right_shoulder_lift",
+        "right_elbow_flex",
+        "right_wrist_flex",
+        "right_wrist_roll",
+        "right_wrist_yaw",
+        "right_gripper"
+      ]
+    },
+    "action": {
+      "dtype": "float32",
+      "shape": [21],
+      "names": [
+        "base_linear_x",
+        "base_linear_y",
+        "base_angular_z",
+        "torso_pitch",
+        "torso_yaw",
+        "left_shoulder_pan",
+        "left_shoulder_lift",
+        "left_elbow_flex",
+        "left_wrist_flex",
+        "left_wrist_roll",
+        "left_wrist_yaw",
+        "left_gripper",
+        "right_shoulder_pan",
+        "right_shoulder_lift",
+        "right_elbow_flex",
+        "right_wrist_flex",
+        "right_wrist_roll",
+        "right_wrist_yaw",
+        "right_gripper"
+      ]
+    },
+    "observation.images.camera_wrist_left": {
+      "dtype": "video",
+      "shape": [480, 640, 3],
+      "info": { "codec": "libx264", "fps": 30.0, "pix_fmt": "yuv420p" }
+    },
+    "observation.images.camera_wrist_right": {
+      "dtype": "video",
+      "shape": [480, 640, 3],
+      "info": { "codec": "libx264", "fps": 30.0, "pix_fmt": "yuv420p" }
+    },
+    "observation.images.camera_scene": {
+      "dtype": "video",
+      "shape": [720, 1280, 3],
+      "info": { "codec": "libx264", "fps": 30.0, "pix_fmt": "yuv420p" }
+    },
+    "observation.images.camera_base_nav": {
+      "dtype": "video",
+      "shape": [480, 640, 3],
+      "info": { "codec": "libx264", "fps": 30.0, "pix_fmt": "yuv420p" }
+    },
+    "timestamp": {
+      "dtype": "float64",
+      "shape": [1],
+      "names": ["jetson_host_monotonic_sec"]
+    },
+    "timestamp_device": {
+      "dtype": "float64",
+      "shape": [1],
+      "names": ["device_native_sec"]
+    },
+    "episode_index": { "dtype": "int64", "shape": [1] },
+    "frame_index": { "dtype": "int64", "shape": [1] },
+    "index": { "dtype": "int64", "shape": [1] },
+    "task_index": { "dtype": "int64", "shape": [1] },
+    "subtask_index": { "dtype": "int64", "shape": [1] }
+  }
+}
