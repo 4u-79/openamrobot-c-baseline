@@ -1,6 +1,10 @@
-﻿__pycache__/
+__pycache__/
 *.py[cod]
 *.class
 .pytest_cache/
 qa_report.json
+.dashboard_test_cache.json
+fixtures/
+openamr-platform-sw/
+openamr-upperbody-sw/
 tmp/

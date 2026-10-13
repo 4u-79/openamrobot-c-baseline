@@ -87,6 +87,31 @@ import numpy as np
 
 LOG = logging.getLogger("c10-qa")
 
+# Populated here once numpy is available (referenced in the constants block above).
+# fmt: off
+CANONICAL_ACTION_LIMITS = np.array([
+    [-0.20,  0.20],   #  0 base_linear_x         [m/s]
+    [ 0.00,  0.00],   #  1 base_linear_y          [m/s]  diff-drive constraint
+    [-0.50,  0.50],   #  2 base_angular_z         [rad/s]
+    [ 0.00,  0.00],   #  3 torso_pitch            [rad]   fixed-mast
+    [ 0.00,  0.00],   #  4 torso_yaw              [rad]   fixed-mast
+    [-2.618, 2.618],  #  5 left_shoulder_pan      [rad]
+    [-1.745, 1.745],  #  6 left_shoulder_lift     [rad]
+    [-2.618, 2.618],  #  7 left_elbow_flex        [rad]
+    [-1.833, 1.833],  #  8 left_wrist_flex        [rad]
+    [-3.142, 3.142],  #  9 left_wrist_roll        [rad]
+    [-1.833, 1.833],  # 10 left_wrist_yaw         [rad]
+    [ 0.00,  1.00],   # 11 left_gripper           [norm 0=open]
+    [-2.618, 2.618],  # 12 right_shoulder_pan     [rad]
+    [-1.745, 1.745],  # 13 right_shoulder_lift    [rad]
+    [-2.618, 2.618],  # 14 right_elbow_flex       [rad]
+    [-1.833, 1.833],  # 15 right_wrist_flex       [rad]
+    [-3.142, 3.142],  # 16 right_wrist_roll       [rad]
+    [-1.833, 1.833],  # 17 right_wrist_yaw        [rad]
+    [ 0.00,  1.00],   # 18 right_gripper          [norm 0=open]
+], dtype=np.float32)
+# fmt: on
+
 # ---------------------------------------------------------------------------
 # Frozen contract constants (schema-v1.0-frozen, P-03 Addendum rev18.2)
 # ---------------------------------------------------------------------------
@@ -111,6 +136,34 @@ ALLOWED_SOURCE_PROFILES = frozenset(
 # C13 phase taxonomy bounds.
 SUBTASK_INDEX_MIN = 0
 SUBTASK_INDEX_MAX = 7
+
+# ---------------------------------------------------------------------------
+# C4 / Action-bound constants (cross-repo hardware audit 2026-10-13)
+# ---------------------------------------------------------------------------
+
+# Frozen 19-channel names (schema-v1.0-frozen ordering).
+CANONICAL_CHANNEL_NAMES: Tuple[str, ...] = (
+    "base_linear_x",       #  0
+    "base_linear_y",       #  1 — diff-drive: always 0.0
+    "base_angular_z",      #  2
+    "torso_pitch",         #  3 — fixed-mast: always 0.0
+    "torso_yaw",           #  4 — fixed-mast: always 0.0
+    "left_shoulder_pan",   #  5
+    "left_shoulder_lift",  #  6
+    "left_elbow_flex",     #  7
+    "left_wrist_flex",     #  8
+    "left_wrist_roll",     #  9
+    "left_wrist_yaw",      # 10
+    "left_gripper",        # 11
+    "right_shoulder_pan",  # 12
+    "right_shoulder_lift", # 13
+    "right_elbow_flex",    # 14
+    "right_wrist_flex",    # 15
+    "right_wrist_roll",    # 16
+    "right_wrist_yaw",     # 17
+    "right_gripper",       # 18
+)
+
 
 # ---------------------------------------------------------------------------
 # Finding codes and severities
@@ -141,6 +194,7 @@ CODE_SOURCE_PROFILE_MISMATCH = "SOURCE_PROFILE_MISMATCH"
 CODE_MISSING_META_FILE = "MISSING_META_FILE"
 CODE_NO_EPISODES_FOUND = "NO_EPISODES_FOUND"
 CODE_SUBTASK_OUT_OF_RANGE = "SUBTASK_OUT_OF_RANGE"
+CODE_ACTION_OUT_OF_BOUNDS = "ACTION_OUT_OF_BOUNDS"
 
 
 @dataclass
@@ -279,10 +333,81 @@ def estimate_phase_lag(
 
 
 # ---------------------------------------------------------------------------
+# Action-bound check (C4 / ±5% tolerance gate, wired into validate_episode)
+# ---------------------------------------------------------------------------
+
+def check_action_bounds(
+    action: Optional[np.ndarray],
+    channel_names: Sequence[str] = CANONICAL_CHANNEL_NAMES,
+    limits: Optional[np.ndarray] = None,
+    margin_pct: float = 0.05,
+    eps: float = 1e-4,
+) -> List[Finding]:
+    """Return REJECT findings for any action channel exceeding physical limits ±5%.
+
+    For channels whose physical span is zero (torso_pitch, torso_yaw,
+    base_linear_y in the fixed-mast / diff-drive configuration) the ±eps absolute
+    tolerance is applied instead of a percentage so that valid zero-valued frames
+    never trigger a false rejection.
+
+    Args:
+        action:        (T, 19) float32 action matrix from the parquet episode.
+        channel_names: per-channel label sequence (used in finding messages).
+        limits:        (19, 2) float32 array of [min, max] physical bounds.
+                       Defaults to CANONICAL_ACTION_LIMITS.
+        margin_pct:    fractional tolerance applied to the span (default 5 %).
+        eps:           absolute tolerance for zero-span channels (default 1e-4).
+
+    Returns:
+        List of Finding objects; empty when all channels are within bounds.
+    """
+    findings: List[Finding] = []
+    if action is None or action.ndim != 2 or action.shape[0] == 0:
+        return findings
+    if limits is None:
+        limits = CANONICAL_ACTION_LIMITS
+    dim = min(action.shape[1], limits.shape[0])
+    for ch in range(dim):
+        ch_name = channel_names[ch] if ch < len(channel_names) else f"ch_{ch}"
+        lo = float(limits[ch, 0])
+        hi = float(limits[ch, 1])
+        span = hi - lo
+        # Zero-span channel: use eps absolute window (e.g. torso_pitch = 0.0).
+        if span < eps:
+            margin = eps
+        else:
+            margin = span * margin_pct
+        lower_bound = lo - margin
+        upper_bound = hi + margin
+        vals = action[:, ch]
+        valid_mask = np.isfinite(vals)
+        if not np.any(valid_mask):
+            continue
+        finite_vals = vals[valid_mask]
+        min_val = float(np.min(finite_vals))
+        max_val = float(np.max(finite_vals))
+        if min_val < lower_bound or max_val > upper_bound:
+            findings.append(
+                Finding(
+                    code=CODE_ACTION_OUT_OF_BOUNDS,
+                    severity=SEV_REJECT,
+                    message=(
+                        f"channel {ch} ({ch_name}) action range "
+                        f"[{min_val:.5f}, {max_val:.5f}] exceeds physical limits "
+                        f"[{lo:.5f}, {hi:.5f}] beyond ±{margin_pct * 100:.0f}% tolerance "
+                        f"(allowed window [{lower_bound:.5f}, {upper_bound:.5f}])"
+                    ),
+                )
+            )
+    return findings
+
+
+# ---------------------------------------------------------------------------
 # Validation engine (shared by the CLI and the C10 fixture suite)
 # ---------------------------------------------------------------------------
 
 def validate_episode(
+
     record: EpisodeRecord, config: QAConfig, valid_task_indices: frozenset
 ) -> EpisodeResult:
     findings: List[Finding] = []
@@ -614,6 +739,9 @@ def validate_episode(
                     f"{SUBTASK_INDEX_MIN}..{SUBTASK_INDEX_MAX}",
                 )
             )
+
+    # 10. Action out-of-bounds gate (±5% of physical limits, C4 audit 2026-10-13).
+    findings.extend(check_action_bounds(record.action))
 
     if any(f.severity == SEV_REJECT for f in findings):
         status = SEV_REJECT

@@ -38,9 +38,12 @@ gate), and the mandatory 8-fixture fault-injection suite.
 │   └── subtasks.jsonl                  # C13 phase taxonomy (subtask_index 0..7)
 ├── scripts/
 │   ├── validate_dataset_contract.py    # Phase 1 gate: schema/contract validation (C2/C9)
-│   └── check_dataset_integrity.py      # Phase 2 gate: C10 pre-flight QA — blocks training
+│   ├── check_dataset_integrity.py      # Phase 2 gate: C10 pre-flight QA — blocks training (±5% bounds check)
+│   ├── replay_episode.py               # Phase 3 deliverable C4: 30 Hz deterministic replay node skeleton
+│   └── run_dashboard.py                # Local verification portal & fixture runner (http://127.0.0.1:8300)
 └── tests/
-    └── test_c10_fixtures.py            # Mandatory 8-fixture fault-injection suite
+    ├── test_c10_fixtures.py            # Mandatory 8-fixture fault-injection suite
+    └── test_c4_and_limits.py           # Deliverable C4 dry-run and action limits unit tests
 ```
 
 ---
@@ -238,9 +241,9 @@ referencing the addendum) before wiring it into CI branch protection on
 
 ## Known follow-ups
 
-- **Action-range QA check** ("within URDF joint limits ± 5%", §3.2) is wired
-  in once Tushar's A6 canonical URDF limits file lands; no guessed limits are
-  hard-coded into the gate.
+- **Action-range QA check** (within URDF joint limits ± 5%, §3.2) is wired
+  into `scripts/check_dataset_integrity.py` via `CANONICAL_ACTION_LIMITS`
+  and verified via `tests/test_c4_and_limits.py`.
 - **Skew epoch alignment** is performed by the ingest layer (C9): device-native
   timestamps are stored epoch-aligned to the Jetson host monotonic domain so
   `|timestamp − timestamp_device|` measures transfer skew, not epoch offset.

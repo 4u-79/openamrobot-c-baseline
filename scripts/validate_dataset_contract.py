@@ -63,14 +63,14 @@ LOG = logging.getLogger("contract-validator")
 EXPECTED_CODEBASE_VERSION = "v3.0"
 EXPECTED_ROBOT_TYPE = "openamrobot_2"
 EXPECTED_FPS = 30
-EXPECTED_STATE_DIM = 21  # HC-7: flat 1-D torch.float32 / float32 vectors
+EXPECTED_STATE_DIM = 19  # HC-7: flat 1-D torch.float32 / float32 vectors
 
 # Channel names enumerated by rev18 (P-02 C2 schema definition).
-# FREEZE BLOCKER 2026-10-09: rev18 declares shape [21] but enumerates only 19
-# channel names. The two missing channels must be confirmed against the A6
-# canonical URDF (owner: Tushar) BEFORE tagging schema-v1.0-frozen (HC-12).
-# Ordering here is normative: the final schema must preserve this relative
-# order of the enumerated channels.
+# RESOLVED 2026-10-13: Fixed-mast design confirmed (P-03 Addendum rev18.2);
+# torso_pitch and torso_yaw are NOT actuated (limits [0,0]). The two apparent
+# "missing" channels were never real — schema is exactly 19 channels. Shape
+# [21] in meta/info.json was a transcription error, now corrected to [19].
+# HC-12 freeze tag unblocked. Ordering here is normative.
 CANONICAL_VECTOR_NAMES_REV18: Tuple[str, ...] = (
     "base_linear_x",
     "base_linear_y",

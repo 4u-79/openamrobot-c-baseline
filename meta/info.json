@@ -5,7 +5,7 @@
   "features": {
     "observation.state": {
       "dtype": "float32",
-      "shape": [21],
+      "shape": [19],
       "names": [
         "base_linear_x",
         "base_linear_y",
@@ -30,7 +30,7 @@
     },
     "action": {
       "dtype": "float32",
-      "shape": [21],
+      "shape": [19],
       "names": [
         "base_linear_x",
         "base_linear_y",

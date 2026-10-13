@@ -93,11 +93,39 @@ def make_clean_record(
 
     # Smooth bounded trajectories across all 19 channels (2 periods per episode
     # gives a sharp cross-correlation peak for the phase-lag detector).
+    # Amplitudes are scaled to 80% of each channel's physical half-range so the
+    # clean-record always passes the CANONICAL_ACTION_LIMITS bounds check that
+    # was wired into validate_episode() as step 10.
+    #
+    # Per-channel amplitude map (80% of |limit| half-range):
+    #   ch 0  base_linear_x  : 0.80 * 0.20 = 0.160 m/s
+    #   ch 1  base_linear_y  : 0.0  (differential drive — always 0)
+    #   ch 2  base_angular_z : 0.80 * 0.50 = 0.400 rad/s
+    #   ch 3  torso_pitch     : 0.0  (fixed mast — not actuated)
+    #   ch 4  torso_yaw       : 0.0  (fixed mast — not actuated)
+    #   ch 5-11 left arm + gripper  : 0.80 * π ≈ 2.513 rad  (OpenArm ±π limits)
+    #   ch 12-18 right arm + gripper: 0.80 * π ≈ 2.513 rad
+    _AMP = np.array([
+        0.160, 0.000, 0.400,          # base (x, y, z)
+        0.000, 0.000,                  # torso pitch, yaw (fixed mast)
+        2.513, 2.513, 2.513, 2.513, 2.513, 2.513,  # left arm joints
+        0.800,                         # left gripper (0-1 range, 80%)
+        2.513, 2.513, 2.513, 2.513, 2.513, 2.513,  # right arm joints
+        0.800,                         # right gripper (0-1 range, 80%)
+    ], dtype=np.float32)
+    assert len(_AMP) == STATE_DIM, f"Amplitude map length mismatch: {len(_AMP)} != {STATE_DIM}"
+
     wave = np.linspace(0.0, 4.0 * np.pi, num_frames)
     state = np.zeros((num_frames, STATE_DIM), dtype=np.float32)
     for j in range(STATE_DIM):
-        state[:, j] = 0.30 * np.sin(wave + 0.35 * j)
-    state = state + rng.normal(0.0, 0.004, state.shape).astype(np.float32)
+        state[:, j] = _AMP[j] * np.sin(wave + 0.35 * j)
+    state = state + rng.normal(0.0, 0.001, state.shape).astype(np.float32)
+
+    # Clamp to ensure noise doesn't push any channel over limits.
+    _LIMITS = cdi.CANONICAL_ACTION_LIMITS  # shape (19, 2) [min, max]
+    state = np.clip(state, _LIMITS[:, 0], _LIMITS[:, 1]).astype(np.float32)
+
+    # Gripper channels: remap to [0, 1] range regardless of noise.
     state[:, LEFT_GRIPPER_IDX] = np.clip(0.5 + 0.5 * np.sin(wave), 0.0, 1.0).astype(np.float32)
     state[:, RIGHT_GRIPPER_IDX] = np.clip(0.5 + 0.5 * np.cos(wave), 0.0, 1.0).astype(np.float32)
 
