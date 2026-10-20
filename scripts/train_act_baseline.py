@@ -372,7 +372,10 @@ def train_act_model(
 ) -> Dict[str, object]:
     """Execute training pipeline and return training summary dict."""
     dataset_path = Path(dataset_path).resolve()
-    reports_dir = REPO_ROOT / "reports"
+    if output_summary is not None:
+        reports_dir = Path(output_summary).resolve().parent
+    else:
+        reports_dir = REPO_ROOT / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. Mandatory Pre-Flight Gate
