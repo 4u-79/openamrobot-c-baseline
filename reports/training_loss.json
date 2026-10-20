@@ -1,0 +1,11 @@
+{
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 3.05377,
+      "train_l1": 0.69528,
+      "train_kl": 2.35849,
+      "held_out_l1": 0.60891
+    }
+  ]
+}

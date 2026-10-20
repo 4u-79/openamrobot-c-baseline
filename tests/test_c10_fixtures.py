@@ -191,7 +191,7 @@ def fix_phase_lag(base: cdi.EpisodeRecord, shift: int = 5) -> cdi.EpisodeRecord:
 
 def fix_frozen_cam(
     base: cdi.EpisodeRecord,
-    cam: str = "observation.images.camera_scene",
+    cam: str = "observation.images.head",
     frozen_frames: int = 61,
 ) -> cdi.EpisodeRecord:
     """FIX-FROZEN-CAM: identical consecutive frame digests for 2.0+ seconds.
@@ -324,7 +324,7 @@ def test_fix_phase_lag_flagged() -> None:
 # ---------------------------------------------------------------------------
 
 def test_fix_frozen_cam_flagged() -> None:
-    cam = "observation.images.camera_scene"
+    cam = "observation.images.head"
     result = validate(fix_frozen_cam(make_clean_record(), cam=cam, frozen_frames=61))
     assert codes_of(result, cdi.SEV_REJECT) == [], result.findings
     assert result.status == "FLAG", "frozen camera must be flagged, not rejected"

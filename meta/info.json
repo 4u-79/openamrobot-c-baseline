@@ -2,6 +2,15 @@
   "codebase_version": "v3.0",
   "robot_type": "openamrobot_2",
   "fps": 30,
+  "profile": "openamrobot-fixed-mast-19dof",
+  "schema_revision": "schema-v1.0-frozen",
+  "profile_note": "P-03 Addendum rev18.2 fixed-mast baseline (19 DoF: 3 base, 2 fixed torso [torso_pitch, torso_yaw], 7 left arm/gripper, 7 right arm/gripper). P-03 Option B DOLD Hexalift V4 (lift_joint) and 7-DoF OpenArm 2.0 whole-body migration pending change control sign-off.",
+  "lerobot_provenance": {
+    "runtime_env": "lerobot==0.4.1",
+    "upstream_c9_snapshot": "v0.6.1 (commit 7e241bd630a3719a56157a497ce5d08f244784f1)",
+    "validated_release_pin": null,
+    "sync_tolerance_note": "30.0 ms is the Workstream C baseline QA pre-flight threshold. Project-level numerical sync tolerance is pending_evidence per C9 contract."
+  },
   "features": {
     "observation.state": {
       "dtype": "float32",
@@ -63,12 +72,12 @@
       "shape": [480, 640, 3],
       "info": { "codec": "libx264", "fps": 30.0, "pix_fmt": "yuv420p" }
     },
-    "observation.images.camera_scene": {
+    "observation.images.head": {
       "dtype": "video",
       "shape": [720, 1280, 3],
       "info": { "codec": "libx264", "fps": 30.0, "pix_fmt": "yuv420p" }
     },
-    "observation.images.camera_base_nav": {
+    "observation.images.base": {
       "dtype": "video",
       "shape": [480, 640, 3],
       "info": { "codec": "libx264", "fps": 30.0, "pix_fmt": "yuv420p" }

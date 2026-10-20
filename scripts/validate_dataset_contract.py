@@ -93,12 +93,18 @@ CANONICAL_VECTOR_NAMES_REV18: Tuple[str, ...] = (
     "right_gripper",
 )
 
-# HC-6: fixed camera keys; shape order is (height, width, channels).
+# C9 / HC-6: canonical camera keys aligned with openamrobot-interfaces C9 v1 contract.
+# head replaces camera_scene (ZED), base replaces camera_base_nav (Gemini 336L).
 CANONICAL_CAMERA_FEATURES: Dict[str, Tuple[int, int, int]] = {
     "observation.images.camera_wrist_left": (480, 640, 3),
     "observation.images.camera_wrist_right": (480, 640, 3),
-    "observation.images.camera_scene": (720, 1280, 3),
-    "observation.images.camera_base_nav": (480, 640, 3),
+    "observation.images.head": (720, 1280, 3),
+    "observation.images.base": (480, 640, 3),
+}
+
+CAMERA_KEY_ALIASES: Dict[str, str] = {
+    "observation.images.camera_scene": "observation.images.head",
+    "observation.images.camera_base_nav": "observation.images.base",
 }
 
 EXPECTED_VIDEO_INFO: Dict[str, object] = {
@@ -271,8 +277,15 @@ def _check_flat_vector(
 def _check_cameras(features: dict, report: Report) -> None:
     for cam_key, expected_shape in CANONICAL_CAMERA_FEATURES.items():
         feat = features.get(cam_key)
+        eval_key = cam_key
+        if feat is None:
+            for legacy_key, can_key in CAMERA_KEY_ALIASES.items():
+                if can_key == cam_key and legacy_key in features:
+                    feat = features.get(legacy_key)
+                    eval_key = legacy_key
+                    break
         if not isinstance(feat, dict):
-            report.record(cam_key, False, "canonical camera key missing (HC-6)")
+            report.record(cam_key, False, "canonical camera key missing (C9 / HC-6)")
             continue
 
         shape_ok = feat.get("shape") == list(expected_shape)
@@ -484,6 +497,13 @@ def _validate_episode_dataframe(
         for cam_key in CANONICAL_CAMERA_FEATURES:
             short = cam_key.split(".")[-1]
             video_file = videos_root / chunk / cam_key / f"{ep_name}.mp4"
+            if not video_file.is_file():
+                for legacy_key, can_key in CAMERA_KEY_ALIASES.items():
+                    if can_key == cam_key:
+                        alt = videos_root / chunk / legacy_key / f"{ep_name}.mp4"
+                        if alt.is_file():
+                            video_file = alt
+                            break
             report.record(
                 f"{ep_name}.video.{short}",
                 video_file.is_file(),

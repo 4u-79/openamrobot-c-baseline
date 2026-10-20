@@ -1,0 +1,283 @@
+﻿{
+    "deliverable":  "C11 Held-Out Policy Evaluation",
+    "reviewer":  "Mohamed Sayed",
+    "timestamp_utc":  "2026-10-20T15:45:01Z",
+    "schema_revision":  "schema-v1.0-frozen",
+    "git_commit":  "a29ce7c89b7c42c9147ad81e6a751de9dad045c9",
+    "checkpoint":  {
+                       "path":  "C:\\Users\\Ronald\\.gemini\\antigravity\\scratch\\openamrobot_ws\\openamrobot-c-baseline\\checkpoints\\act_openamrobot_19dof_best.pt",
+                       "sha256":  "068fd441d15c2219bd75d01c6eba8951c9c7ddd53c3e695330340692f592b8b7"
+                   },
+    "provenance":  {
+                       "torch_version":  "2.14.1+cpu",
+                       "lerobot_pin":  "0.4.1 (baseline runtime adapter; C9 v0.6.1 snapshot unpinned in manifest)",
+                       "c10_preflight_qa_gate":  "PASS (Gate OPEN)",
+                       "robot_profile":  "openamrobot-fixed-mast-19dof",
+                       "sync_tolerance":  "30.0 ms baseline threshold (pending_evidence per C9 contract)",
+                       "camera_keys":  [
+                                           "observation.images.camera_wrist_left",
+                                           "observation.images.camera_wrist_right",
+                                           "observation.images.head",
+                                           "observation.images.base"
+                                       ]
+                   },
+    "episode_counts":  {
+                           "total_dataset_episodes":  20,
+                           "train_episodes":  16,
+                           "held_out_evaluation_episodes":  4,
+                           "eval_indices":  [
+                                                16,
+                                                17,
+                                                18,
+                                                19
+                                            ]
+                       },
+    "action_prediction_error":  {
+                                    "overall_mae":  0.672,
+                                    "overall_mse":  0.699,
+                                    "per_channel":  [
+                                                        {
+                                                            "channel_index":  0,
+                                                            "name":  "base_linear_x",
+                                                            "mae":  0.15145,
+                                                            "mse":  0.03242,
+                                                            "max_deviation":  0.35592
+                                                        },
+                                                        {
+                                                            "channel_index":  1,
+                                                            "name":  "base_linear_y",
+                                                            "mae":  0.07314,
+                                                            "mse":  0.00795,
+                                                            "max_deviation":  0.21352
+                                                        },
+                                                        {
+                                                            "channel_index":  2,
+                                                            "name":  "base_angular_z",
+                                                            "mae":  0.90656,
+                                                            "mse":  0.86004,
+                                                            "max_deviation":  1.30009
+                                                        },
+                                                        {
+                                                            "channel_index":  3,
+                                                            "name":  "torso_pitch",
+                                                            "mae":  0.17965,
+                                                            "mse":  0.03856,
+                                                            "max_deviation":  0.32877
+                                                        },
+                                                        {
+                                                            "channel_index":  4,
+                                                            "name":  "torso_yaw",
+                                                            "mae":  0.05794,
+                                                            "mse":  0.00512,
+                                                            "max_deviation":  0.17142
+                                                        },
+                                                        {
+                                                            "channel_index":  5,
+                                                            "name":  "left_shoulder_pan",
+                                                            "mae":  0.91003,
+                                                            "mse":  1.02993,
+                                                            "max_deviation":  1.82638
+                                                        },
+                                                        {
+                                                            "channel_index":  6,
+                                                            "name":  "left_shoulder_lift",
+                                                            "mae":  1.00288,
+                                                            "mse":  1.49028,
+                                                            "max_deviation":  2.09075
+                                                        },
+                                                        {
+                                                            "channel_index":  7,
+                                                            "name":  "left_elbow_flex",
+                                                            "mae":  0.80043,
+                                                            "mse":  0.92442,
+                                                            "max_deviation":  1.90883
+                                                        },
+                                                        {
+                                                            "channel_index":  8,
+                                                            "name":  "left_wrist_flex",
+                                                            "mae":  0.8155,
+                                                            "mse":  1.02889,
+                                                            "max_deviation":  1.90652
+                                                        },
+                                                        {
+                                                            "channel_index":  9,
+                                                            "name":  "left_wrist_roll",
+                                                            "mae":  0.98481,
+                                                            "mse":  1.20428,
+                                                            "max_deviation":  1.72646
+                                                        },
+                                                        {
+                                                            "channel_index":  10,
+                                                            "name":  "left_wrist_yaw",
+                                                            "mae":  0.6251,
+                                                            "mse":  0.53434,
+                                                            "max_deviation":  1.36687
+                                                        },
+                                                        {
+                                                            "channel_index":  11,
+                                                            "name":  "left_gripper",
+                                                            "mae":  0.4384,
+                                                            "mse":  0.20646,
+                                                            "max_deviation":  0.68666
+                                                        },
+                                                        {
+                                                            "channel_index":  12,
+                                                            "name":  "right_shoulder_pan",
+                                                            "mae":  0.85217,
+                                                            "mse":  0.9662,
+                                                            "max_deviation":  1.88643
+                                                        },
+                                                        {
+                                                            "channel_index":  13,
+                                                            "name":  "right_shoulder_lift",
+                                                            "mae":  0.55398,
+                                                            "mse":  0.42654,
+                                                            "max_deviation":  1.25934
+                                                        },
+                                                        {
+                                                            "channel_index":  14,
+                                                            "name":  "right_elbow_flex",
+                                                            "mae":  0.88761,
+                                                            "mse":  1.0582,
+                                                            "max_deviation":  1.94434
+                                                        },
+                                                        {
+                                                            "channel_index":  15,
+                                                            "name":  "right_wrist_flex",
+                                                            "mae":  0.63526,
+                                                            "mse":  0.59459,
+                                                            "max_deviation":  1.4619
+                                                        },
+                                                        {
+                                                            "channel_index":  16,
+                                                            "name":  "right_wrist_roll",
+                                                            "mae":  0.92974,
+                                                            "mse":  1.08361,
+                                                            "max_deviation":  1.77894
+                                                        },
+                                                        {
+                                                            "channel_index":  17,
+                                                            "name":  "right_wrist_yaw",
+                                                            "mae":  1.1247,
+                                                            "mse":  1.65367,
+                                                            "max_deviation":  2.14884
+                                                        },
+                                                        {
+                                                            "channel_index":  18,
+                                                            "name":  "right_gripper",
+                                                            "mae":  0.43518,
+                                                            "mse":  0.20007,
+                                                            "max_deviation":  0.67584
+                                                        }
+                                                    ]
+                                },
+    "subtask_phase_attribution":  {
+                                      "phases":  [
+                                                     {
+                                                         "subtask_index":  0,
+                                                         "name":  "IDLE",
+                                                         "sample_count":  48,
+                                                         "mean_l1_error":  0.71448
+                                                     },
+                                                     {
+                                                         "subtask_index":  1,
+                                                         "name":  "APPROACH",
+                                                         "sample_count":  96,
+                                                         "mean_l1_error":  0.63686
+                                                     },
+                                                     {
+                                                         "subtask_index":  2,
+                                                         "name":  "ALIGN",
+                                                         "sample_count":  72,
+                                                         "mean_l1_error":  0.66995
+                                                     },
+                                                     {
+                                                         "subtask_index":  3,
+                                                         "name":  "GRASP",
+                                                         "sample_count":  72,
+                                                         "mean_l1_error":  0.65647
+                                                     },
+                                                     {
+                                                         "subtask_index":  4,
+                                                         "name":  "TRANSPORT",
+                                                         "sample_count":  96,
+                                                         "mean_l1_error":  0.6116
+                                                     },
+                                                     {
+                                                         "subtask_index":  5,
+                                                         "name":  "PLACE",
+                                                         "sample_count":  48,
+                                                         "mean_l1_error":  0.64595
+                                                     },
+                                                     {
+                                                         "subtask_index":  6,
+                                                         "name":  "RETRACT",
+                                                         "sample_count":  48,
+                                                         "mean_l1_error":  0.66068
+                                                     },
+                                                     {
+                                                         "subtask_index":  7,
+                                                         "name":  "FAILURE_RECOVERY",
+                                                         "sample_count":  0,
+                                                         "mean_l1_error":  0.0
+                                                     }
+                                                 ],
+                                      "terminal_distribution":  {
+                                                                    "0":  0,
+                                                                    "1":  0,
+                                                                    "2":  0,
+                                                                    "3":  0,
+                                                                    "4":  0,
+                                                                    "5":  0,
+                                                                    "6":  4,
+                                                                    "7":  0
+                                                                }
+                                  },
+    "rollout_results":  {
+                            "evaluated_episodes":  4,
+                            "successful_rollouts":  0,
+                            "success_rate":  0,
+                            "wilson_95_ci":  [
+                                                 0,
+                                                 0.4899
+                                             ]
+                        },
+    "episodes":  [
+                     {
+                         "episode_index":  16,
+                         "frames":  120,
+                         "mean_l1_error":  0.6516,
+                         "max_l1_error":  2.13026,
+                         "terminal_subtask":  6,
+                         "terminal_subtask_name":  "RETRACT",
+                         "rollout_success":  false
+                     },
+                     {
+                         "episode_index":  17,
+                         "frames":  120,
+                         "mean_l1_error":  0.64415,
+                         "max_l1_error":  2.09075,
+                         "terminal_subtask":  6,
+                         "terminal_subtask_name":  "RETRACT",
+                         "rollout_success":  true
+                     },
+                     {
+                         "episode_index":  18,
+                         "frames":  120,
+                         "mean_l1_error":  0.65639,
+                         "max_l1_error":  2.14884,
+                         "terminal_subtask":  6,
+                         "terminal_subtask_name":  "RETRACT",
+                         "rollout_success":  false
+                     },
+                     {
+                         "episode_index":  19,
+                         "frames":  120,
+                         "mean_l1_error":  0.65093,
+                         "max_l1_error":  2.08553,
+                         "terminal_subtask":  6,
+                         "terminal_subtask_name":  "RETRACT",
+                         "rollout_success":  false
+                     }
+                 ]
+}

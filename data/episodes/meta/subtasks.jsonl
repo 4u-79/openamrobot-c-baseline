@@ -1,0 +1,8 @@
+{"subtask_index": 0, "name": "IDLE", "description": "Robot stationary, awaiting task start"}
+{"subtask_index": 1, "name": "APPROACH", "description": "End-effector moving toward target"}
+{"subtask_index": 2, "name": "ALIGN", "description": "Fine positioning / orientation adjustment"}
+{"subtask_index": 3, "name": "GRASP", "description": "Gripper closing on object"}
+{"subtask_index": 4, "name": "TRANSPORT", "description": "Object held, moving toward placement"}
+{"subtask_index": 5, "name": "PLACE", "description": "Object released at target"}
+{"subtask_index": 6, "name": "RETRACT", "description": "End-effector withdrawing"}
+{"subtask_index": 7, "name": "FAILURE_RECOVERY", "description": "Intervention or error-recovery motion"}

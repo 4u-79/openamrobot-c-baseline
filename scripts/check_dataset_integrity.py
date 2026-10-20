@@ -120,13 +120,19 @@ STATE_DIM = 19
 CANONICAL_FPS = 30.0
 SCHEMA_REVISION = "schema-v1.0-frozen (19-channel fixed-mast, P-03 Addendum rev18.2)"
 
-# HC-6: fixed camera keys.
+# C9 / HC-6: fixed camera keys aligned with openamrobot-interfaces C9 v1.
+# head replaces camera_scene (ZED), base replaces camera_base_nav (Gemini 336L).
 CANONICAL_CAMERAS: Tuple[str, ...] = (
     "observation.images.camera_wrist_left",
     "observation.images.camera_wrist_right",
-    "observation.images.camera_scene",
-    "observation.images.camera_base_nav",
+    "observation.images.head",
+    "observation.images.base",
 )
+
+CAMERA_KEY_ALIASES: Dict[str, str] = {
+    "observation.images.camera_scene": "observation.images.head",
+    "observation.images.camera_base_nav": "observation.images.base",
+}
 
 # HC-8: data classes are never silently mixed.
 ALLOWED_SOURCE_PROFILES = frozenset(
@@ -1115,6 +1121,13 @@ def run_qa(
             chunk_dir = pf.parent.name
             for cam in CANONICAL_CAMERAS:
                 mp4 = dataset_path / "videos" / chunk_dir / cam / (pf.stem + ".mp4")
+                if not mp4.is_file():
+                    for legacy_key, can_key in CAMERA_KEY_ALIASES.items():
+                        if can_key == cam:
+                            alt = dataset_path / "videos" / chunk_dir / legacy_key / (pf.stem + ".mp4")
+                            if alt.is_file():
+                                mp4 = alt
+                                break
                 if not mp4.is_file():
                     LOG.debug("video file missing for %s: %s", pf.name, mp4)
                     continue

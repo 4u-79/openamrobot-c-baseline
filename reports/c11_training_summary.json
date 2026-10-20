@@ -1,0 +1,35 @@
+{
+  "deliverable": "C11 ACT Baseline Training",
+  "timestamp_utc": "2026-10-20T10:35:14Z",
+  "schema_revision": "schema-v1.0-frozen",
+  "robot_profile": "openamrobot-fixed-mast-19dof",
+  "checkpoint_path": "checkpoints/act_openamrobot_19dof_best.pt",
+  "checkpoint_sha256": "068fd441d15c2219bd75d01c6eba8951c9c7ddd53c3e695330340692f592b8b7",
+  "checkpoint_size_bytes": 11892731,
+  "epochs_completed": 3,
+  "duration_sec": 4.12,
+  "config": {
+    "chunk_size": 100,
+    "d_model": 256,
+    "n_heads": 8,
+    "enc_layers": 4,
+    "dec_layers": 4,
+    "latent_dim": 32,
+    "temporal_ensembling_lambda": 0.01
+  },
+  "episodes": {
+    "total": 20,
+    "train_count": 16,
+    "train_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    "held_out_count": 4,
+    "held_out_indices": [16, 17, 18, 19]
+  },
+  "final_metrics": {
+    "epoch": 3,
+    "train_loss": 0.6333,
+    "train_l1": 0.6333,
+    "train_kl": 0.0,
+    "held_out_l1": 0.6720
+  },
+  "smoke_test": true
+}

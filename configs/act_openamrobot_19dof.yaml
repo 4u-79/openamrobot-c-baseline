@@ -1,0 +1,58 @@
+# =============================================================================
+# OpenAMRobot 2.0 | Workstream C | Deliverable C11 (ACT Imitation Baseline)
+# configs/act_openamrobot_19dof.yaml
+#
+# Pinned to:
+#   - profile: openamrobot-fixed-mast-19dof (schema-v1.0-frozen, rev18.2)
+#   - 19-channel whole-body state/action space (3 base, 2 fixed torso, 7+7 arms/grippers)
+#   - C9 canonical camera keys (camera_wrist_left, camera_wrist_right, head, base)
+#   - chunk_size = 100 frames (3.33 seconds @ 30 Hz)
+# =============================================================================
+
+model:
+  name: "act"
+  robot_type: "openamrobot_2"
+  profile: "openamrobot-fixed-mast-19dof"
+  schema_revision: "schema-v1.0-frozen"
+  state_dim: 19
+  action_dim: 19
+  chunk_size: 100
+  fps: 30
+
+  # Transformer architecture parameters
+  d_model: 256
+  n_heads: 8
+  enc_layers: 4
+  dec_layers: 4
+  dim_feedforward: 512
+  latent_dim: 32
+  dropout: 0.1
+
+  # Vision backbone & cameras (aligned with C9 v1 contract)
+  vision_backbone: "resnet18"
+  camera_keys:
+    - "observation.images.camera_wrist_left"
+    - "observation.images.camera_wrist_right"
+    - "observation.images.head"
+    - "observation.images.base"
+
+training:
+  batch_size: 8
+  lr: 0.0001
+  weight_decay: 0.0001
+  kl_weight: 10.0
+  epochs: 50
+  eval_split: 0.2
+  seed: 42
+  device: "cpu"  # override via CLI --device cuda or --device cpu
+
+loss:
+  type: "l1_plus_kl"
+  l1_weight: 1.0
+  kl_weight: 10.0
+
+preflight_gate:
+  mandatory: true
+  gate_source: "check_dataset_integrity.py"
+  require_source_profile: "GAZEBO"  # or ROBOT, DIAGNOSTICS
+  skew_threshold_ms: 30.0  # baseline QA pre-flight threshold (pending project-level approval)
